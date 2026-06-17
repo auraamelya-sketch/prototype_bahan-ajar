@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaya Apung & Hukum Archimedes — Bahan Ajar Interaktif</title>
+<style>
+  @import url('https://cdnjs.cloudflare.com/ajax/libs/typeface-fraunces/1.0.2/fraunces.min.css');
+</style>
+<style>
+  :root{
+    --deep: #0b2e3c;
+    --deep2:#0f3d4f;
+    --foam: #eef6f3;
+    --sand: #f3ead9;
+    --coral: #e0673e;
+    --teal: #2a9d8f;
+    --gold: #d9a441;
+    --ink:  #0b2230;
+    --line: rgba(11,46,60,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--foam);
+    color: var(--ink);
+    font-family: 'Source Sans 3', 'Segoe UI', Arial, sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--deep);
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 22px;}
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    background: linear-gradient(180deg, var(--deep) 0%, var(--deep2) 55%, #156276 100%);
+    color: var(--foam);
+    overflow:hidden;
+    padding-bottom: 64px;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      radial-gradient(circle at 18% 30%, rgba(255,255,255,0.06) 0, transparent 45%),
+      radial-gradient(circle at 85% 10%, rgba(255,255,255,0.05) 0, transparent 40%);
+  }
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 22px 0 0;
+    font-size:13px; letter-spacing:.08em; text-transform:uppercase;
+    color: rgba(238,246,243,0.6);
+  }
+  .hero h1{
+    color:#fff;
+    font-size: clamp(34px, 6vw, 56px);
+    margin: 26px 0 10px;
+    max-width: 11ch;
+  }
+  .hero .sub{
+    max-width:520px;
+    color: rgba(238,246,243,0.82);
+    font-size:17px;
+  }
+  .cp-box{
+    margin-top:28px;
+    border-left:3px solid var(--gold);
+    padding: 4px 0 4px 18px;
+    font-size:14.5px;
+    color: rgba(238,246,243,0.78);
+    max-width:560px;
+  }
+  .cp-box b{color:#fff; font-weight:600;}
+
+  /* wave divider */
+  .wave{display:block; width:100%; height:60px; margin-top:-2px;}
+
+  /* ---------- SIGNATURE: floating object demo ---------- */
+  .demo-card{
+    background:#fff;
+    border-radius: 18px;
+    box-shadow: 0 18px 50px -22px rgba(11,46,60,0.35), 0 1px 0 var(--line);
+    padding: 28px;
+    margin: -86px auto 46px;
+    position:relative;
+    z-index:5;
+    border: 1px solid var(--line);
+  }
+  .demo-grid{display:grid; grid-template-columns: 1.1fr 1fr; gap:26px; align-items:center;}
+  @media (max-width:720px){ .demo-grid{grid-template-columns:1fr;} }
+
+  .tank{
+    position:relative;
+    height: 260px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #cfe9ec 0%, #bfe0e3 38%, #8fc7cf 100%);
+    overflow:hidden;
+    border: 2px solid #aad2d6;
+  }
+  .tank::after{
+    content:"";
+    position:absolute; left:0; right:0; top:0; height:38%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0));
+  }
+  .waterline{
+    position:absolute; left:0; right:0; top:38%; height:2px;
+    background: rgba(255,255,255,0.7);
+  }
+  .obj{
+    position:absolute; left:50%; width:64px; height:64px;
+    border-radius:10px;
+    transform: translateX(-50%);
+    transition: top 1.1s cubic-bezier(.2,.8,.2,1), background .3s;
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:700; color:#fff; text-align:center;
+    box-shadow: 0 10px 18px -8px rgba(0,0,0,0.35);
+  }
+  .ripple{
+    position:absolute; left:50%; transform:translateX(-50%);
+    width:10px; height:10px; border-radius:50%;
+    border:2px solid rgba(255,255,255,0.85);
+    opacity:0; pointer-events:none;
+  }
+  .ripple.go{ animation: rip 0.9s ease-out forwards; }
+  @keyframes rip{
+    0%{width:10px;height:10px;opacity:0.9;}
+    100%{width:140px;height:46px;opacity:0;}
+  }
+
+  .controls{font-size:14.5px;}
+  .controls .label{font-weight:600; color:var(--deep); font-size:13px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px;}
+  .chip-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
+  .chip{
+    border:1.5px solid var(--line); background:#fff; color:var(--deep);
+    padding:7px 13px; border-radius:999px; font-size:13.5px; cursor:pointer;
+    font-family:inherit; transition: all .15s;
+  }
+  .chip:hover{border-color:var(--teal); color:var(--teal);}
+  .chip.active{background:var(--deep); color:#fff; border-color:var(--deep);}
+  .readout{
+    background: var(--sand); border-radius:10px; padding:14px 16px; font-size:14px;
+    border:1px solid rgba(217,164,65,0.4);
+  }
+  .readout .verdict{font-family:'Fraunces',serif; font-size:19px; font-weight:600; color:var(--coral); margin-bottom:4px;}
+  .readout.float .verdict{color:var(--teal);}
+  .readout.sink .verdict{color:var(--coral);}
+  .readout.hover .verdict{color:var(--gold);}
+
+  /* ---------- SECTIONS ---------- */
+  section{padding: 50px 0;}
+  .eyebrow{
+    font-size:13px; letter-spacing:.12em; text-transform:uppercase;
+    color: var(--teal); font-weight:700; margin-bottom:10px;
+  }
+  h2{font-size: clamp(24px,3.6vw,32px); margin:0 0 18px;}
+  p{margin:0 0 14px; max-width:680px;}
+
+  .divider{height:1px; background:var(--line); margin: 6px 0 0;}
+
+  /* concept rows */
+  .concept{
+    display:grid; grid-template-columns: 90px 1fr; gap:22px;
+    padding: 26px 0; border-top:1px solid var(--line);
+  }
+  .concept:first-of-type{border-top:none;}
+  .concept .tag{
+    font-family:'Fraunces',serif; font-weight:600; color: var(--line);
+    font-size:42px; line-height:1;
+  }
+  .concept h3{font-size:19px; margin:0 0 8px;}
+  .concept p{font-size:15px; color:#33474f;}
+  .formula{
+    display:inline-block; background:#fff; border:1px solid var(--line);
+    border-radius:8px; padding:10px 16px; font-family:'Fraunces',serif;
+    font-size:17px; margin: 6px 0 10px; color:var(--deep);
+  }
+  .formula sub{font-size:11px;}
+
+  /* condition cards */
+  .cond-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:8px;}
+  @media (max-width:720px){.cond-grid{grid-template-columns:1fr;}}
+  .cond{
+    border-radius:14px; padding:18px; border:1px solid var(--line); background:#fff;
+  }
+  .cond .icon{width:38px;height:38px;border-radius:50%; margin-bottom:10px; display:flex;align-items:center;justify-content:center; font-size:16px;}
+  .cond.f .icon{background:rgba(42,157,143,0.15); color:var(--teal);}
+  .cond.m .icon{background:rgba(217,164,65,0.18); color:var(--gold);}
+  .cond.s .icon{background:rgba(224,103,62,0.15); color:var(--coral);}
+  .cond h4{margin:0 0 6px; font-size:15.5px; font-family:'Fraunces',serif;}
+  .cond p{font-size:13.5px; margin:0; color:#445a62;}
+  .cond .rel{font-size:12.5px; font-weight:700; letter-spacing:.03em; margin-top:8px; display:block;}
+  .cond.f .rel{color:var(--teal);} .cond.m .rel{color:var(--gold);} .cond.s .rel{color:var(--coral);}
+
+  /* local context strip */
+  .local{
+    background: var(--deep);
+    color: var(--foam);
+    border-radius: 18px;
+    padding: 30px 28px;
+    margin-top: 10px;
+  }
+  .local h3{color:#fff; font-size:20px; margin:0 0 6px;}
+  .local p.lead{color:rgba(238,246,243,0.78); font-size:14.5px; max-width:600px; margin-bottom:22px;}
+  .local-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  @media (max-width:760px){.local-grid{grid-template-columns:repeat(2,1fr);}}
+  .local-item{
+    background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+    border-radius:12px; padding:14px; font-size:13.5px;
+  }
+  .local-item .emoji{font-size:22px; display:block; margin-bottom:8px;}
+  .local-item b{display:block; font-size:14px; margin-bottom:4px; color:#fff;}
+
+  /* glossary */
+  .gloss{display:grid; grid-template-columns: 200px 1fr; gap: 4px 18px; font-size:14.5px;}
+  .gloss dt{font-weight:700; color:var(--deep); padding:11px 0; border-top:1px solid var(--line);}
+  .gloss dd{margin:0; padding:11px 0; border-top:1px solid var(--line); color:#33474f;}
+
+  /* practice */
+  .qcard{
+    background:#fff; border:1px solid var(--line); border-radius:14px;
+    padding:20px 22px; margin-bottom:14px;
+  }
+  .qcard .qn{font-size:12.5px; font-weight:700; color:var(--teal); letter-spacing:.05em; text-transform:uppercase; margin-bottom:8px;}
+  .qcard p{font-size:15px; margin-bottom:0;}
+  .badge{
+    display:inline-block; font-size:11px; font-weight:700; letter-spacing:.04em;
+    padding:3px 9px; border-radius:999px; margin-left:8px; vertical-align:middle;
+    background: rgba(224,103,62,0.12); color:var(--coral);
+  }
+
+  footer{
+    background: var(--deep); color: rgba(238,246,243,0.6);
+    text-align:center; padding: 30px 22px; font-size:13px;
+  }
+  footer b{color:#fff;}
+
+  ::selection{background: var(--gold); color:#fff;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="topbar">
+      <span>Bahan Ajar Fisika &middot; Fase F</span>
+      <span>Bab Fluida Statis</span>
+    </div>
+    <h1>Mengapa Kapal Baja Tidak Tenggelam?</h1>
+    <p class="sub">Modul interaktif Gaya Apung &amp; Hukum Archimedes — dibangun dari kesenjangan kedalaman materi, visualisasi, dan konteks lokal pada buku teks standar.</p>
+    <div class="cp-box">
+      <b>Capaian Pembelajaran:</b> Peserta didik mampu menjelaskan dan menganalisis gaya apung (Hukum Archimedes) serta menentukan kondisi benda mengapung, melayang, dan tenggelam berdasarkan hubungan massa jenis benda dan fluida dalam kehidupan sehari-hari.
+    </div>
+  </div>
+  <svg class="wave" viewBox="0 0 1440 60" preserveAspectRatio="none"><path d="M0,30 C220,60 480,0 720,28 C960,56 1220,8 1440,30 L1440,60 L0,60 Z" fill="#eef6f3"></path></svg>
+</div>
+
+<div class="wrap">
+  <!-- SIGNATURE INTERACTIVE -->
+  <div class="demo-card">
+    <div class="eyebrow" style="margin-bottom:14px;">Coba sendiri</div>
+    <div class="demo-grid">
+      <div>
+        <div class="tank" id="tank">
+          <div class="waterline"></div>
+          <div class="ripple" id="ripple"></div>
+          <div class="obj" id="obj" style="top:30px; background:#3a6f76;">KAYU</div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="label">Pilih benda</div>
+        <div class="chip-row" id="chips">
+          <button class="chip active" data-name="KAYU" data-rho="600" data-color="#8a5a34">Kayu (600 kg/m&sup3;)</button>
+          <button class="chip" data-name="ES BATU" data-rho="920" data-color="#9fd6dd">Es Batu (920 kg/m&sup3;)</button>
+          <button class="chip" data-name="BESI" data-rho="7870" data-color="#5b6770">Besi Pejal (7870 kg/m&sup3;)</button>
+          <button class="chip" data-name="TELUR ASIN" data-rho="1040" data-color="#d9a441">Telur di Air Garam (1040 kg/m&sup3;)</button>
+        </div>
+        <div class="readout float" id="readout">
+          <div class="verdict">Mengapung</div>
+          <div id="readout-text">Massa jenis kayu (600 kg/m&sup3;) lebih kecil daripada massa jenis air laut (1025 kg/m&sup3;), sehingga gaya apung mampu menahan seluruh berat kayu sebelum benda sepenuhnya tercelup.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KONSEP -->
+  <section id="konsep">
+    <div class="eyebrow">01 &middot; Konsep Inti</div>
+    <h2>Dari Mana Datangnya Gaya ke Atas Itu?</h2>
+    <p>Perhatikan gambar kapal yang mengapung. Kapal tidak melawan beratnya sendiri dengan "kekuatan ajaib" — air di sekitarnya yang mendorong balik. Inilah yang dirumuskan Archimedes lebih dari dua ribu tahun lalu.</p>
+
+    <div class="concept">
+      <div class="tag">01</div>
+      <div>
+        <h3>Gaya Apung (Gaya Archimedes)</h3>
+        <p>Ketika benda dicelupkan ke dalam fluida (zat cair atau gas), benda tersebut mendesak sejumlah fluida keluar dari tempatnya. Fluida yang terdesak ini "membalas" dengan gaya dorong ke atas pada benda. Besarnya gaya itu sama dengan berat fluida yang dipindahkan — bukan berat benda itu sendiri.</p>
+        <div class="formula">F<sub>A</sub> = &rho;<sub>fluida</sub> &times; g &times; V<sub>tercelup</sub></div>
+        <p style="font-size:13.5px; color:#5a6e76;">F<sub>A</sub> = gaya apung (N) &middot; &rho;<sub>fluida</sub> = massa jenis fluida (kg/m&sup3;) &middot; g = percepatan gravitasi (m/s&sup2;) &middot; V<sub>tercelup</sub> = volume bagian benda yang tercelup (m&sup3;)</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="tag">02</div>
+      <div>
+        <h3>Mengapa Kapal Baja Bisa Mengapung?</h3>
+        <p>Kuncinya bukan bahan kapal, tetapi bentuknya. Lambung kapal yang besar dan berongga membuat volume air yang dipindahkan menjadi sangat besar. Berat air sebesar itu setara dengan berat total kapal beserta isinya — sehingga gaya apung yang dihasilkan cukup untuk menahan kapal, meski terbuat dari logam yang berat.</p>
+      </div>
+    </div>
+
+    <div class="concept">
+      <div class="tag">03</div>
+      <div>
+        <h3>Massa Jenis: Faktor Penentu</h3>
+        <p>Perbandingan antara massa jenis benda (&rho;<sub>b</sub>) dan massa jenis fluida (&rho;<sub>f</sub>) menentukan apakah benda akan mengapung, melayang, atau tenggelam. Inilah yang akan kamu uji pada bagian berikutnya.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIGA KONDISI -->
+  <section id="kondisi" style="padding-top:0;">
+    <div class="eyebrow">02 &middot; Tiga Kemungkinan</div>
+    <h2>Mengapung, Melayang, atau Tenggelam</h2>
+    <p>Bandingkan massa jenis benda dengan massa jenis fluida tempat benda berada.</p>
+    <div class="cond-grid">
+      <div class="cond f">
+        <div class="icon">&#9651;</div>
+        <h4>Mengapung</h4>
+        <p>Sebagian benda berada di atas permukaan fluida. Berat benda lebih kecil daripada gaya apung maksimum yang bisa diberikan fluida.</p>
+        <span class="rel">&rho;benda &lt; &rho;fluida</span>
+      </div>
+      <div class="cond m">
+        <div class="icon">&#9711;</div>
+        <h4>Melayang</h4>
+        <p>Benda diam di dalam fluida, tidak menyentuh dasar maupun permukaan. Gaya apung tepat menyeimbangkan berat benda.</p>
+        <span class="rel">&rho;benda = &rho;fluida</span>
+      </div>
+      <div class="cond s">
+        <div class="icon">&#9660;</div>
+        <h4>Tenggelam</h4>
+        <p>Benda turun hingga ke dasar. Gaya apung maksimum yang tersedia masih lebih kecil daripada berat benda.</p>
+        <span class="rel">&rho;benda &gt; &rho;fluida</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- KONTEKS LOKAL -->
+  <section id="lokal" style="padding-top:0;">
+    <div class="eyebrow">03 &middot; Konteks Nyata</div>
+    <h2>Hukum Archimedes di Sekitar Kita</h2>
+    <div class="local">
+      <h3>Dari perahu nelayan sampai kapal selam</h3>
+      <p class="lead">Prinsip yang sama menjelaskan benda-benda yang biasa kamu lihat di perairan Indonesia, bukan hanya kapal raksasa di buku teks.</p>
+      <div class="local-grid">
+        <div class="local-item">
+          <span class="emoji">&#x1F6F6;</span>
+          <b>Perahu Nelayan</b>
+          Lambung kayu/fiber yang lebar memindahkan banyak air agar muatan ikan tetap terapung.
+        </div>
+        <div class="local-item">
+          <span class="emoji">&#x26F4;</span>
+          <b>Kapal Feri</b>
+          Desain lambung ganda memperbesar volume tercelup sehingga ratusan penumpang dan kendaraan tetap aman terapung.
+        </div>
+        <div class="local-item">
+          <span class="emoji">&#x1F6F3;</span>
+          <b>Kapal Selam</b>
+          Mengatur air dalam tangki ballast untuk mengubah massa jenis rata-rata — bisa mengapung, melayang, atau menyelam sesuka hati.
+        </div>
+        <div class="local-item">
+          <span class="emoji">&#x1F6DF;</span>
+          <b>Pelampung/Jaket Apung</b>
+          Material berongga ber-massa jenis rendah menambah gaya apung total tubuh penggunanya saat di air.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GLOSARIUM -->
+  <section id="glosarium" style="padding-top:0;">
+    <div class="eyebrow">04 &middot; Istilah Penting</div>
+    <h2>Glosarium</h2>
+    <dl class="gloss">
+      <dt>Gaya Apung</dt><dd>Gaya yang diberikan fluida ke atas terhadap benda yang tercelup di dalamnya.</dd>
+      <dt>Massa Jenis</dt><dd>Perbandingan massa benda terhadap volumenya; menentukan "kepadatan" suatu zat (kg/m&sup3;).</dd>
+      <dt>Hukum Archimedes</dt><dd>Pernyataan bahwa gaya apung pada benda tercelup sama dengan berat fluida yang dipindahkan oleh benda itu.</dd>
+      <dt>Volume Tercelup</dt><dd>Bagian volume benda yang benar-benar berada di bawah permukaan fluida.</dd>
+      <dt>Tangki Ballast</dt><dd>Ruang pada kapal/kapal selam yang diisi air untuk mengatur massa jenis rata-rata kendaraan.</dd>
+    </dl>
+  </section>
+
+  <!-- LATIHAN -->
+  <section id="latihan" style="padding-top:0;">
+    <div class="eyebrow">05 &middot; Uji Pemahaman</div>
+    <h2>Latihan Singkat</h2>
+    <div class="qcard">
+      <div class="qn">Konseptual</div>
+      <p>Dua benda memiliki berat yang sama, tetapi salah satunya mengapung dan satunya tenggelam di air laut. Apa yang membedakan keduanya? Jelaskan menggunakan konsep massa jenis dan volume.</p>
+    </div>
+    <div class="qcard">
+      <div class="qn">Hitungan</div>
+      <p>Sebuah balok kayu bermassa 4 kg seluruhnya tercelup dalam air tawar (&rho; = 1000 kg/m&sup3;). Jika volume balok 0,008 m&sup3;, tentukan besar gaya apung yang dialami balok. (g = 10 m/s&sup2;)</p>
+    </div>
+    <div class="qcard">
+      <div class="qn">HOTS <span class="badge">Studi Kasus</span></div>
+      <p>Sebuah kapal selam dapat menyelam, melayang, dan muncul ke permukaan tanpa mengubah bentuk lambungnya. Bagaimana hal ini mungkin terjadi? Kaitkan jawabanmu dengan pengaturan massa jenis rata-rata kapal selam.</p>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap"><b>Modul Gaya Apung &amp; Hukum Archimedes</b> &middot; Prototipe Bahan Ajar Interaktif &middot; Disusun berdasarkan analisis kesenjangan bahan ajar Fisika Fase F</div>
+</footer>
+
+<script>
+  const bodies = {
+    "KAYU": {rho:600, color:"#8a5a34"},
+    "ES BATU": {rho:920, color:"#9fd6dd"},
+    "BESI": {rho:7870, color:"#5b6770"},
+    "TELUR ASIN": {rho:1040, color:"#d9a441"}
+  };
+  const rhoFluid = 1025; // air laut
+  const tankHeight = 260;
+  const waterTop = tankHeight * 0.38;
+  const objSize = 64;
+
+  const objEl = document.getElementById('obj');
+  const readoutEl = document.getElementById('readout');
+  const readoutText = document.getElementById('readout-text');
+  const ripple = document.getElementById('ripple');
+
+  function setState(name){
+    const b = bodies[name];
+    objEl.style.background = b.color;
+    objEl.textContent = name;
+
+    let topPos, verdict, cls, text;
+    if(b.rho < rhoFluid){
+      // floats: sits partly submerged proportional to density ratio
+      const submergedFrac = b.rho / rhoFluid; // fraction of height submerged
+      const submergedPx = objSize * submergedFrac;
+      topPos = waterTop - (objSize - submergedPx);
+      verdict = "Mengapung";
+      cls = "float";
+      text = `Massa jenis ${name.toLowerCase()} (${b.rho} kg/m&sup3;) lebih kecil daripada massa jenis air laut (1025 kg/m&sup3;), sehingga sekitar ${Math.round(submergedFrac*100)}% bagian benda tercelup sebelum gaya apung menyeimbangkan beratnya.`;
+    } else if(b.rho === rhoFluid){
+      topPos = waterTop + (tankHeight - waterTop)/2 - objSize/2;
+      verdict = "Melayang";
+      cls = "hover";
+      text = `Massa jenis ${name.toLowerCase()} (${b.rho} kg/m&sup3;) sama dengan massa jenis air laut, sehingga gaya apung tepat menyeimbangkan berat benda dan benda diam di tengah fluida.`;
+    } else {
+      topPos = tankHeight - objSize - 4;
+      verdict = "Tenggelam";
+      cls = "sink";
+      text = `Massa jenis ${name.toLowerCase()} (${b.rho} kg/m&sup3;) lebih besar daripada massa jenis air laut (1025 kg/m&sup3;), sehingga gaya apung maksimum tidak cukup menahan berat benda dan benda turun ke dasar.`;
+    }
+
+    objEl.style.top = topPos + "px";
+    readoutEl.className = "readout " + cls;
+    readoutEl.querySelector(".verdict").textContent = verdict;
+    readoutText.innerHTML = text;
+
+    ripple.style.top = (waterTop - 5) + "px";
+    ripple.classList.remove('go');
+    void ripple.offsetWidth;
+    ripple.classList.add('go');
+  }
+
+  document.querySelectorAll('.chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      setState(chip.dataset.name);
+    });
+  });
+
+  // init
+  setState("KAYU");
+</script>
+
+</body>
+</html>
